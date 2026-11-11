@@ -1,0 +1,6 @@
+.env
+*.key
+__pycache__/
+.venv/
+paper_trades.csv
+STOP
