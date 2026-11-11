@@ -8,11 +8,12 @@ things the Nautilus engine needs:
     2. Order book data (every recorded snapshot, full depth)
     3. Trade ticks     (every recorded trade, so resting limit orders can fill)
 
-It also defines the Polymarket US fee model: takers pay rate x price x (1 - price), makers pay nothing.
+It also defines the Polymarket US fee model: takers pay rate x contracts x price x (1 - price),
+rounded to the cent. Makers earn a small rebate on Polymarket US; we leave it out to stay conservative.
 """
 
 import sys
-from decimal import Decimal
+from decimal import ROUND_HALF_EVEN, Decimal
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))  # find the pmus folder
@@ -121,15 +122,17 @@ def trade_ticks(instrument: BinaryOption, trades: pd.DataFrame) -> list[TradeTic
 
 
 class PolymarketUSFeeModel(FeeModel):
-    """Takers pay contracts x rate x price x (1 - price). Makers pay nothing.
+    """Takers pay rate x contracts x price x (1 - price), rounded to the cent, half to even.
 
-    The rate comes from instrument.taker_fee. Check the current Polymarket US schedule
-    for your market's category and set TAKER_FEE_RATE in .env to match.
+    The rate comes from instrument.taker_fee, set from TAKER_FEE_RATE in .env. It depends on
+    your trailing 30-day taker volume (0.095 below $10K). Makers pay no fee and actually earn
+    a small rebate; this model counts maker fills as zero, which slightly understates them.
+    Source: https://docs.polymarket.us/fees
     """
 
     def get_commission(self, order, fill_qty, fill_px, instrument) -> Money:
         if order.liquidity_side == LiquiditySide.MAKER:
             return Money(0, instrument.quote_currency)
-        p = float(fill_px)
-        fee = float(fill_qty) * float(instrument.taker_fee) * p * (1 - p)
-        return Money(round(fee, 4), instrument.quote_currency)
+        p = Decimal(str(fill_px))
+        fee = Decimal(str(instrument.taker_fee)) * Decimal(str(fill_qty)) * p * (1 - p)
+        return Money(fee.quantize(Decimal("0.01"), rounding=ROUND_HALF_EVEN), instrument.quote_currency)

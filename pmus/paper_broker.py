@@ -3,7 +3,7 @@
 Assumptions (deliberately pessimistic, so paper results don't flatter you):
   - You trade as a taker: buys fill at the best ask, sells at the best bid.
   - You only get the size showing at the top of the book.
-  - Every fill pays the taker fee: contracts x rate x price x (1 - price).
+  - Every fill pays the taker fee: rate x contracts x price x (1 - price), rounded to the cent.
   - Open positions are valued at the best bid (what you could sell for right now).
 """
 
@@ -64,7 +64,7 @@ class PaperBroker:
         }
         self.trades.append(row)
         if not self.quiet:
-            print(f"  PAPER {side} {qty:g} @ {px:.2f}  fee {fee:.4f}  pos {self.position:g}")
+            print(f"  PAPER {side} {qty:g} @ {px:.2f}  fee {fee:.2f}  pos {self.position:g}")
         if not self.log_path:
             return
         new_file = not _exists(self.log_path)

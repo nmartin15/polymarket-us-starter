@@ -13,7 +13,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT))
-os.environ.update({"FAIR_VALUE": "0.55", "MIN_EDGE": "0.04", "TAKER_FEE_RATE": "0.05", "ORDER_SIZE": "10",
+os.environ.update({"FAIR_VALUE": "0.55", "MIN_EDGE": "0.04", "TAKER_FEE_RATE": "0.095", "ORDER_SIZE": "10",
                    "MAX_POSITION": "50", "MAX_DAILY_LOSS": "25", "POLL_SECONDS": "0", "QUOTE_OFFSET": "0.03",
                    "MARKET_SLUG": "sample-market"})
 
@@ -32,7 +32,7 @@ def main() -> None:
     from pmus.recording import read_events
     from pmus.strategy import Settings, taker_fee
 
-    assert abs(taker_fee(100, 0.50, 0.05) - 1.25) < 1e-9, "fee formula"
+    assert taker_fee(100, 0.50, 0.095) == 2.38 and taker_fee(100, 0.10, 0.0695) == 0.63, "fee formula (matches docs.polymarket.us/fees)"
     print("1/5 SDK installed and fee formula correct")
 
     load("video2_data_paper/make_sample_data.py").main()

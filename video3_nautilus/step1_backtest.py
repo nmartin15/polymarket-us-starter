@@ -81,7 +81,7 @@ def summarize(engine: BacktestEngine, instrument, name: str, last_bid: float) ->
 
 def run(slug: str, strategy_cls, fair: float, verbose: bool = False) -> dict:
     books, trades = load_tables(slug)
-    instrument = make_instrument(slug, books, float(setting("TAKER_FEE_RATE", "0.05")))
+    instrument = make_instrument(slug, books, float(setting("TAKER_FEE_RATE", "0.095")))
     engine = build_engine(instrument, verbose)
     engine.add_data(book_snapshots(instrument, books))
     ticks = trade_ticks(instrument, trades)

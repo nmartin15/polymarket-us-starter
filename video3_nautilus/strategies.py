@@ -3,7 +3,8 @@
 Both trade around FAIR_VALUE, your own probability that the market resolves YES.
 
     FairValueTaker  crosses the spread when the price is far enough from fair value. Pays the fee.
-    FairValueMaker  rests limit orders around fair value and waits to be hit. Pays no fee,
+    FairValueMaker  rests limit orders around fair value and waits to be hit. Pays no fee
+                    (Polymarket US even pays makers a small rebate),
                     but only fills when someone else decides to trade with it.
 
 Nautilus calls on_order_book_deltas() on every book update, in a backtest or live.
@@ -51,7 +52,7 @@ class FairValueTaker(_FairValueBase):
     """Same rule as the video 2 paper bot, now on a professional engine."""
 
     def fee(self, price: float) -> float:
-        return float(self.instrument.taker_fee) * price * (1 - price)
+        return float(self.instrument.taker_fee) * price * (1 - price)  # per contract, before rounding
 
     def on_order_book_deltas(self, deltas) -> None:
         if self.cache.orders_inflight(strategy_id=self.id) or self.cache.orders_open(strategy_id=self.id):

@@ -21,12 +21,12 @@ from pmus.strategy import taker_fee  # noqa: E402
 def explore(slug: str) -> dict:
     books = pd.read_parquet(PARQUET / slug / "books.parquet").dropna(subset=["bid", "ask"])
     trades = pd.read_parquet(PARQUET / slug / "trades.parquet")
-    rate = float(setting("TAKER_FEE_RATE", "0.05"))
+    rate = float(setting("TAKER_FEE_RATE", "0.095"))
 
     hours = (books["ts"].iloc[-1] - books["ts"].iloc[0]) / 3.6e12
     mid = books["mid"].median()
     spread = books["spread"].median()
-    fee_round_trip = 2 * taker_fee(1, mid, rate)
+    fee_round_trip = 2 * taker_fee(1, mid, rate, rounded=False)
     cost = spread + fee_round_trip
     stats = {
         "hours recorded": round(hours, 2),

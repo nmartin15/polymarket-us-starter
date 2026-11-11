@@ -14,8 +14,10 @@ This is for Polymarket US (the CFTC-regulated app at polymarket.us). It does not
 
 You need two things:
 
-1. **Python 3.12 or newer.** Download it from [python.org/downloads](https://www.python.org/downloads/). On Windows, tick "Add Python to PATH" in the installer.
-2. **A verified Polymarket US account.** Sign up in the Polymarket US app and finish identity verification.
+1. **Python 3.12 or newer.** (The Polymarket SDK needs 3.10+, and the engine in video 3 needs 3.12+.) Download it from [python.org/downloads](https://www.python.org/downloads/). On Windows, tick "Add Python to PATH" in the installer.
+2. **A verified Polymarket US account.** Download the Polymarket US **iOS app**, sign up with Google or Apple, and finish the identity check (date of birth, phone, legal name, address, and SSN; some people are also asked for a photo ID and a selfie). Most people are approved instantly. If the app asks for an invite code, email support@polymarket.us. Trading isn't available in Nevada.
+
+Official docs: [docs.polymarket.us](https://docs.polymarket.us/getting-started/quickstart). Use the **API Reference** and **SDK** sections. Skip the **Trader Guide**: that's the institutional API for firms, with RSA keys and an application process, and it doesn't apply here.
 
 ## Video 1: Setup
 
@@ -29,7 +31,7 @@ You need two things:
    pip install -r requirements.txt
    ```
 3. **Check your setup.** `python check_everything.py` should end with "All offline checks passed".
-4. **Create your API key** at polymarket.us/developer. The secret is shown once, so save it right away.
+4. **Create your API key.** Go to [polymarket.us/developer](https://polymarket.us/developer) and sign in **the same way you signed up in the app** (Apple, Google, or email). Polymarket warns that switching sign-in methods can break your API key. Click to create a key. You get a **Key ID** and a **Secret Key**. The secret is shown once, so copy it before you close the dialog.
 5. **Add your key.** Copy `.env.example` to a new file named `.env` and paste in your Key ID and Secret Key.
 
 Now run the two scripts from the video:
@@ -44,6 +46,7 @@ Key rules:
 - `.env` is in `.gitignore`. Keep it there.
 - Never paste your secret into a chat, a screenshot, or a screen recording.
 - If a key leaks, revoke it at polymarket.us/developer and make a new one.
+- The API allows 20 requests per second per key. The scripts here stay far below that.
 
 ## Video 2: Data plumbing and paper trading
 
@@ -102,7 +105,18 @@ What a backtest cannot tell you:
 
 ## Fees
 
-Polymarket US charges takers `contracts x rate x price x (1 - price)`, by market category, and makers pay nothing. Set `TAKER_FEE_RATE` in `.env` to the current rate for your market's category. Check the official schedule before you trade, because it changes.
+Polymarket US charges takers `rate x contracts x price x (1 - price)`, rounded to the cent. Makers pay no fee and earn a small rebate. Your rate depends on your taker volume over the last 30 days:
+
+| 30-day taker volume | Rate |
+|---|---|
+| Under $10,000 | 9.5% |
+| $10,000 to $50,000 | 8.5% |
+| $50,000 to $250,000 | 7.5% |
+| $250,000 and up | 6.95% |
+
+New accounts pay 6.95% for their first 7 days. Everything in this repo assumes 9.5%, the rate a new trader settles into. Set `TAKER_FEE_RATE` in `.env` to your tier, and check the [official fee schedule](https://docs.polymarket.us/fees) before you trade, because it changes.
+
+The backtest in video 3 counts maker fills as zero fee and leaves the rebate out, so maker results are slightly understated.
 
 ## Files
 

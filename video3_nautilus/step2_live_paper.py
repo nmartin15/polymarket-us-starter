@@ -49,7 +49,7 @@ def run(client, slug: str, strategy_cls, fair: float, poll: float, max_loss: flo
     ts, bids, asks, _ = fetch(client, slug, record)
     first = pd.DataFrame([{"ts": ts, "bid_prices": [p for p, _ in bids], "bid_sizes": [q for _, q in bids],
                            "ask_prices": [p for p, _ in asks], "ask_sizes": [q for _, q in asks]}])
-    instrument = make_instrument(slug, first, float(setting("TAKER_FEE_RATE", "0.05")))
+    instrument = make_instrument(slug, first, float(setting("TAKER_FEE_RATE", "0.095")))
     engine = build_engine(instrument)
     engine.add_strategy(strategy_cls(strategy_config(instrument, fair)))
     print(f"NAUTILUS PAPER MODE. {strategy_cls.__name__} on {slug}, fair value {fair:.2f}. No real orders.\n")
