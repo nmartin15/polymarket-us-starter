@@ -27,7 +27,7 @@ Official docs: [docs.polymarket.us](https://docs.polymarket.us/getting-started/q
 ### Stop 1: your iPhone
 
 1. Download the **Polymarket US** app from the App Store.
-2. Sign up with **Google or Apple**. Remember which one you used.
+2. Sign up with **Google or Apple**. Keep the app on your phone; you'll use it to sign in on your computer in stop 2.
 3. Finish the identity check: legal name, date of birth, phone number, home address, and Social Security number. Some people are also asked for a photo of their ID and a selfie. Most people are approved instantly.
 4. Wait until the app says you're approved.
 
@@ -36,9 +36,10 @@ If the app asks for an invite code, email support@polymarket.us. Polymarket US i
 ### Stop 2: your web browser
 
 1. On your computer, go to [polymarket.us/developer](https://polymarket.us/developer).
-2. Sign in **the same way you signed up on your phone** (Apple, Google, or email). Polymarket warns that switching sign-in methods can break your API key.
-3. Click to create a key. You get a **Key ID** and a **Secret Key**.
-4. Copy the secret right away. It's shown once, and it's gone when you close the dialog.
+2. Scan the QR code on your screen with your iPhone.
+3. Confirm with Face ID on your phone. You're now signed in on the computer.
+4. Click to create a key. You get a **Key ID** and a **Secret Key**.
+5. Copy the secret right away. It's shown once, and it's gone when you close the dialog.
 
 ### Stop 3: your computer's terminal
 
