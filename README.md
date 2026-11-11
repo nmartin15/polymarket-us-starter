@@ -12,16 +12,35 @@ This is for Polymarket US (the CFTC-regulated app at polymarket.us). It does not
 
 ## Before you start
 
-You need two things:
+You need three things:
 
-1. **Python 3.12 or newer.** (The Polymarket SDK needs 3.10+, and the engine in video 3 needs 3.12+.) Download it from [python.org/downloads](https://www.python.org/downloads/). On Windows, tick "Add Python to PATH" in the installer.
-2. **A verified Polymarket US account.** Download the Polymarket US **iOS app**, sign up with Google or Apple, and finish the identity check (date of birth, phone, legal name, address, and SSN; some people are also asked for a photo ID and a selfie). Most people are approved instantly. If the app asks for an invite code, email support@polymarket.us. Trading isn't available in Nevada.
+1. **An iPhone.** Your Polymarket US account starts in the Polymarket US iPhone app.
+2. **A computer (Mac or Windows) with Python 3.12 or newer.** Download it from [python.org/downloads](https://www.python.org/downloads/). On Windows, tick "Add Python to PATH" in the installer. (The Polymarket SDK needs 3.10+, and the engine in video 3 needs 3.12+.)
+3. **About 30 minutes,** most of it the identity check.
 
 Official docs: [docs.polymarket.us](https://docs.polymarket.us/getting-started/quickstart). This series uses the **retail API**: the **API Reference** and **SDK** sections. The docs also have a **Trader Guide**, which covers Polymarket's institutional API for firms, market makers, and professional traders (separate application, RSA keys, a pre-production test environment). That's a different setup, and it will get its own video.
 
 ## Video 1: Setup
 
-**Watch the video first.** Then do these five steps on your own. They take about 15 minutes.
+**Watch the video first.** Setup happens in three places, in this order.
+
+### Stop 1: your iPhone
+
+1. Download the **Polymarket US** app from the App Store.
+2. Sign up with **Google or Apple**. Remember which one you used.
+3. Finish the identity check: legal name, date of birth, phone number, home address, and Social Security number. Some people are also asked for a photo of their ID and a selfie. Most people are approved instantly.
+4. Wait until the app says you're approved.
+
+If the app asks for an invite code, email support@polymarket.us. Polymarket US isn't available in Nevada.
+
+### Stop 2: your web browser
+
+1. On your computer, go to [polymarket.us/developer](https://polymarket.us/developer).
+2. Sign in **the same way you signed up on your phone** (Apple, Google, or email). Polymarket warns that switching sign-in methods can break your API key.
+3. Click to create a key. You get a **Key ID** and a **Secret Key**.
+4. Copy the secret right away. It's shown once, and it's gone when you close the dialog.
+
+### Stop 3: your computer's terminal
 
 1. **Download the code.** Click the green **Code** button on this page, then **Download ZIP**, and unzip it. (If you use git: `git clone https://github.com/nmartin15/polymarket-us-starter`.)
 2. **Open a terminal in that folder and install.** On a Mac, if `python` isn't found, type `python3` for the first command.
@@ -31,8 +50,7 @@ Official docs: [docs.polymarket.us](https://docs.polymarket.us/getting-started/q
    pip install -r requirements.txt
    ```
 3. **Check your setup.** `python check_everything.py` should end with "All offline checks passed".
-4. **Create your API key.** Go to [polymarket.us/developer](https://polymarket.us/developer) and sign in **the same way you signed up in the app** (Apple, Google, or email). Polymarket warns that switching sign-in methods can break your API key. Click to create a key. You get a **Key ID** and a **Secret Key**. The secret is shown once, so copy it before you close the dialog.
-5. **Add your key.** Copy `.env.example` to a new file named `.env` and paste in your Key ID and Secret Key.
+4. **Add your key.** Copy `.env.example` to a new file named `.env` and paste in your Key ID and Secret Key.
 
 Now run the two scripts from the video:
 
