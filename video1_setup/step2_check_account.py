@@ -1,8 +1,13 @@
 """Step 2: Prove your API key works. Read-only: this script never places orders."""
 
-from polymarket_us import AuthenticationError
+import sys
+from pathlib import Path
 
-from config import private_client
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))  # find the pmus folder
+
+from polymarket_us import AuthenticationError  # noqa: E402
+
+from pmus.config import private_client  # noqa: E402
 
 
 def main() -> None:

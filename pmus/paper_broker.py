@@ -11,9 +11,7 @@ import csv
 import datetime as dt
 from dataclasses import dataclass, field
 
-
-def taker_fee(contracts: float, price: float, rate: float) -> float:
-    return round(contracts * rate * price * (1 - price), 4)
+from pmus.strategy import taker_fee
 
 
 @dataclass
@@ -25,6 +23,8 @@ class PaperBroker:
     realized_pnl: float = 0.0
     fees_paid: float = 0.0
     trades: list = field(default_factory=list)
+    quiet: bool = False
+    clock: object = None          # replay passes recorded timestamps here
 
     def buy(self, qty: float, ask: float, ask_qty: float) -> float:
         filled = min(qty, ask_qty)
@@ -58,18 +58,21 @@ class PaperBroker:
 
     def _log(self, side: str, qty: float, px: float, fee: float) -> None:
         row = {
-            "time": dt.datetime.now().isoformat(timespec="seconds"),
+            "time": self.clock or dt.datetime.now().isoformat(timespec="seconds"),
             "side": side, "qty": qty, "price": px, "fee": fee,
             "position": self.position, "realized_pnl": round(self.realized_pnl, 4),
         }
         self.trades.append(row)
+        if not self.quiet:
+            print(f"  PAPER {side} {qty:g} @ {px:.2f}  fee {fee:.4f}  pos {self.position:g}")
+        if not self.log_path:
+            return
         new_file = not _exists(self.log_path)
         with open(self.log_path, "a", newline="") as f:
             w = csv.DictWriter(f, fieldnames=row.keys())
             if new_file:
                 w.writeheader()
             w.writerow(row)
-        print(f"  PAPER {side} {qty:g} @ {px:.2f}  fee {fee:.4f}  pos {self.position:g}")
 
 
 def _exists(path: str) -> bool:

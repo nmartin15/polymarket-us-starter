@@ -1,0 +1,2 @@
+# Video 3 (install after the root requirements.txt)
+nautilus_trader>=1.231.0

@@ -1,13 +1,16 @@
 """Step 1: Pull live market data. No API key required.
 
 Usage:
-    python step1_market_data.py                 # list active markets
-    python step1_market_data.py <market-slug>   # quote + order book for one market
+    python video1_setup/step1_market_data.py                 # list active markets
+    python video1_setup/step1_market_data.py <market-slug>   # quote + order book for one market
 """
 
 import sys
+from pathlib import Path
 
-from config import public_client
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))  # find the pmus folder
+
+from pmus.config import public_client  # noqa: E402
 
 
 def price(amount) -> str:
@@ -19,7 +22,7 @@ def list_markets(client) -> None:
     print(f"{'SLUG':<55} {'VOLUME':>12} {'LIQUIDITY':>12}")
     for m in resp.get("markets", []):
         print(f"{m.get('slug', ''):<55} {m.get('volume', 0):>12,.0f} {m.get('liquidity', 0):>12,.0f}")
-    print("\nPick a slug and run: python step1_market_data.py <slug>")
+    print("\nPick a slug and run: python video1_setup/step1_market_data.py <slug>")
 
 
 def show_market(client, slug: str) -> None:
