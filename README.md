@@ -17,7 +17,7 @@ You need two things:
 1. **Python 3.12 or newer.** (The Polymarket SDK needs 3.10+, and the engine in video 3 needs 3.12+.) Download it from [python.org/downloads](https://www.python.org/downloads/). On Windows, tick "Add Python to PATH" in the installer.
 2. **A verified Polymarket US account.** Download the Polymarket US **iOS app**, sign up with Google or Apple, and finish the identity check (date of birth, phone, legal name, address, and SSN; some people are also asked for a photo ID and a selfie). Most people are approved instantly. If the app asks for an invite code, email support@polymarket.us. Trading isn't available in Nevada.
 
-Official docs: [docs.polymarket.us](https://docs.polymarket.us/getting-started/quickstart). Use the **API Reference** and **SDK** sections. Skip the **Trader Guide**: that's the institutional API for firms, with RSA keys and an application process, and it doesn't apply here.
+Official docs: [docs.polymarket.us](https://docs.polymarket.us/getting-started/quickstart). This series uses the **retail API**: the **API Reference** and **SDK** sections. The docs also have a **Trader Guide**, which covers Polymarket's institutional API for firms, market makers, and professional traders (separate application, RSA keys, a pre-production test environment). That's a different setup, and it will get its own video.
 
 ## Video 1: Setup
 
