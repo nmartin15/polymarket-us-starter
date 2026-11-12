@@ -9,7 +9,7 @@ Polymarket US has two trading APIs. Pick the one that matches who you are.
 | | **Retail API** (this repo) | **Institutional API** ([Trader Guide](https://docs.polymarket.us/trader-guide/overview)) |
 |---|---|---|
 | Who it's for | Anyone with a personal Polymarket US account, including people automating their own trading | Firms Polymarket onboards: market makers, brokers, funds |
-| How you get in | The iPhone app, then one key from polymarket.us/developer | Polymarket onboarding: Client ID, JWT private key, pre-production environment |
+| How you get in | Sign up in the iPhone app or on the web, then one key from polymarket.us/developer | Polymarket onboarding: Client ID, JWT private key, pre-production environment |
 | How you connect | Official Python SDK (REST) and two WebSockets | REST, gRPC, or FIX |
 | Account ID | Never. Your key implies your account | Every call names an `accountId` |
 
@@ -21,7 +21,7 @@ It's also different from polymarket.com, Polymarket's international crypto produ
 
 | # | Step | Video | Script |
 |---|---|---|---|
-| 1 | Phone: install the iOS app, get approved, fund your account | 1 | none |
+| 1 | Account: sign up (app or web), verify with your phone, fund it | 1 | none |
 | 2 | One key from polymarket.us/developer, into `.env` | 1 | `video1_setup/step3_check_key.py` |
 | 3 | Public market data, no key: series, events, markets, book | 1 | `video1_setup/step1_browse.py`, `step2_market.py` |
 | 4 | Your account over REST: balances, positions, open orders | 2 | `video2_account_live/step1_account.py` |
@@ -31,22 +31,23 @@ It's also different from polymarket.com, Polymarket's international crypto produ
 
 ## Before you start
 
-- **An iPhone** for the Polymarket US app.
+- **A phone** for the identity check (ID photo and selfie). Signing up in the iPhone app is optional; the web works too.
 - **A computer with Python 3.10 or newer** ([python.org/downloads](https://www.python.org/downloads/); on Windows, tick "Add Python to PATH").
 
 ## Video 1: Account, key, and market data
 
 **Watch the video first.** Then:
 
-### On your iPhone
-1. Download **Polymarket US** from the App Store and sign up.
-2. Finish identity verification (legal name, date of birth, phone, address, SSN; some people are also asked for an ID photo and a selfie) and wait for the in-app approval.
-3. Fund your account from **Portfolio → Deposit**.
+### Sign up and get verified
+1. Sign up either way: download **Polymarket US** from the App Store, or go to [polymarket.us](https://polymarket.us) in your browser.
+2. Finish identity verification: legal name, date of birth, phone, address, SSN, plus a photo of your ID and a selfie. The photos happen on your phone. If you signed up on the web, scan the QR code it shows you with your phone.
+3. Wait until you're approved.
+4. Fund your account from **Portfolio → Deposit**.
 
-If the app asks for an invite code, email support@polymarket.us. Polymarket US isn't available in Nevada.
+If you're asked for an invite code, email support@polymarket.us. Polymarket US isn't available in Nevada.
 
 ### In your web browser
-1. Go to [polymarket.us/developer](https://polymarket.us/developer) and sign in with the same login you use on your phone.
+1. Go to [polymarket.us/developer](https://polymarket.us/developer) and sign in with the same account you signed up with.
 2. Create a key. You get a **Key ID** and a **Secret Key**. Copy the secret now; it's shown once.
 
 ### On your computer
