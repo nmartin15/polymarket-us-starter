@@ -2,6 +2,3 @@
 *.key
 __pycache__/
 .venv/
-data/
-paper_trades.csv
-STOP

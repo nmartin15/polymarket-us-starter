@@ -1,5 +1,2 @@
-# Videos 1 and 2
 polymarket-us>=2.4.1
 python-dotenv>=1.0.0
-pandas>=2.2
-pyarrow>=15

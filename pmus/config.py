@@ -1,35 +1,44 @@
-"""Loads settings from .env (in the repo root) so secrets never live in your code."""
+"""Loads your key and settings from .env (in the repo root), so secrets never live in your code.
+
+One key from polymarket.us/developer does everything in this repo: it signs your REST
+calls and opens both WebSockets. The key implies your account, so there is no account ID.
+"""
 
 import os
+import sys
 from pathlib import Path
 
 from dotenv import load_dotenv
-from polymarket_us import PolymarketUS
+from polymarket_us import AsyncPolymarketUS, PolymarketUS
 
 ROOT = Path(__file__).resolve().parents[1]
-DATA_DIR = ROOT / "data"
 load_dotenv(ROOT / ".env")
 
 
-def public_client() -> PolymarketUS:
-    """No keys needed. Market data only."""
-    return PolymarketUS()
+def setting(name: str, default: str = "") -> str:
+    """Read a value from .env, ignoring inline comments like '0.095   # note'."""
+    return os.getenv(name, default).split("#")[0].strip()
 
 
 def keys() -> tuple[str, str]:
-    key_id = os.getenv("POLYMARKET_KEY_ID")
-    secret = os.getenv("POLYMARKET_SECRET_KEY")
-    if not key_id or not secret or "your-" in key_id:
-        raise SystemExit("Missing keys. Copy .env.example to .env and add your keys.")
+    key_id, secret = setting("POLYMARKET_KEY_ID"), setting("POLYMARKET_SECRET_KEY")
+    if not key_id or not secret or key_id.startswith("your-"):
+        sys.exit("No API key found. Copy .env.example to .env and paste in your Key ID and Secret Key.")
     return key_id, secret
 
 
+def public_client() -> PolymarketUS:
+    """Public market data. No key needed."""
+    return PolymarketUS()
+
+
 def private_client() -> PolymarketUS:
-    """Needs your API key. Can read your account."""
+    """Your account. The SDK signs every request with your key."""
     key_id, secret = keys()
     return PolymarketUS(key_id=key_id, secret_key=secret)
 
 
-def setting(name: str, default: str) -> str:
-    # Strip inline comments like "0.50   # note"
-    return os.getenv(name, default).split("#")[0].strip()
+def async_private_client() -> AsyncPolymarketUS:
+    """For the WebSockets, which are async. Both sockets need your key."""
+    key_id, secret = keys()
+    return AsyncPolymarketUS(key_id=key_id, secret_key=secret)

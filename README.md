@@ -1,154 +1,135 @@
 # Polymarket US Starter
 
-The free code for a three-video series from Realm Labs. It takes you from a Polymarket US account to a professional trading engine, and it only ever paper trades. Nothing in this repo can place a real order.
+Free code for a three-video series from Realm Labs: connect your personal Polymarket US account to Python, read markets, watch your account live, and place a small order the right way.
 
-This is for Polymarket US (the CFTC-regulated app at polymarket.us). It does not work with polymarket.com, and keys from one do not work on the other.
+## Which Polymarket API is this?
 
-| Video | Folder | What you build |
+Polymarket US has two trading APIs. Pick the one that matches who you are.
+
+| | **Retail API** (this repo) | **Institutional API** ([Trader Guide](https://docs.polymarket.us/trader-guide/overview)) |
 |---|---|---|
-| 1. Setup | `video1_setup/` | API key, live market data, account check |
-| 2. Data plumbing and paper trading | `video2_data_paper/` | Record the order book, store it as Parquet, replay it, run a live paper bot |
-| 3. A professional engine | `video3_nautilus/` | Feed your US data into NautilusTrader, backtest taker and maker strategies, paper trade live |
+| Who it's for | Anyone with a personal Polymarket US account, including people automating their own trading | Firms Polymarket onboards: market makers, brokers, funds |
+| How you get in | The iPhone app, then one key from polymarket.us/developer | Polymarket onboarding: Client ID, JWT private key, pre-production environment |
+| How you connect | Official Python SDK (REST) and two WebSockets | REST, gRPC, or FIX |
+| Account ID | Never. Your key implies your account | Every call names an `accountId` |
+
+A key from polymarket.us/developer does not open the institutional API. If you trade your own money, you're on the retail side, even with a fully automated strategy. The institutional API will get its own video.
+
+It's also different from polymarket.com, Polymarket's international crypto product. Tutorials for that one use wallets and blockchain keys. Ignore them here.
+
+## The path, in the order you'll hit it
+
+| # | Step | Video | Script |
+|---|---|---|---|
+| 1 | Phone: install the iOS app, get approved, fund your account | 1 | none |
+| 2 | One key from polymarket.us/developer, into `.env` | 1 | `video1_setup/step3_check_key.py` |
+| 3 | Public market data, no key: series, events, markets, book | 1 | `video1_setup/step1_browse.py`, `step2_market.py` |
+| 4 | Your account over REST: balances, positions, open orders | 2 | `video2_account_live/step1_account.py` |
+| 5 | Markets WebSocket: live book, prices, trades, heartbeats | 2 | `video2_account_live/step2_market_stream.py` |
+| 6 | Private WebSocket: your orders, fills, positions, balance live | 2 | `video2_account_live/step3_private_stream.py` |
+| 7 | Orders: preview, then one tiny real order, then cancel | 3 | `video3_orders/step1_preview.py`, `step2_place_and_cancel.py` |
 
 ## Before you start
 
-You need three things:
+- **An iPhone** for the Polymarket US app.
+- **A computer with Python 3.10 or newer** ([python.org/downloads](https://www.python.org/downloads/); on Windows, tick "Add Python to PATH").
 
-1. **An iPhone.** Your Polymarket US account starts in the Polymarket US iPhone app.
-2. **A computer (Mac or Windows) with Python 3.12 or newer.** Download it from [python.org/downloads](https://www.python.org/downloads/). On Windows, tick "Add Python to PATH" in the installer. (The Polymarket SDK needs 3.10+, and the engine in video 3 needs 3.12+.)
-3. **About 30 minutes,** most of it the identity check.
+## Video 1: Account, key, and market data
 
-Official docs: [docs.polymarket.us](https://docs.polymarket.us/getting-started/quickstart). This series uses the **retail API**: the **API Reference** and **SDK** sections. The docs also have a **Trader Guide**, which covers Polymarket's institutional API for firms, market makers, and professional traders (separate application, RSA keys, a pre-production test environment). That's a different setup, and it will get its own video.
+**Watch the video first.** Then:
 
-## Video 1: Setup
-
-**Watch the video first.** Setup happens in three places, in this order.
-
-### Stop 1: your iPhone
-
-1. Download the **Polymarket US** app from the App Store.
-2. Sign up with **Google or Apple**. Keep the app on your phone; you'll use it to sign in on your computer in stop 2.
-3. Finish the identity check: legal name, date of birth, phone number, home address, and Social Security number. Some people are also asked for a photo of their ID and a selfie. Most people are approved instantly.
-4. Wait until the app says you're approved.
+### On your iPhone
+1. Download **Polymarket US** from the App Store and sign up.
+2. Finish identity verification (legal name, date of birth, phone, address, SSN; some people are also asked for an ID photo and a selfie) and wait for the in-app approval.
+3. Fund your account from **Portfolio → Deposit**.
 
 If the app asks for an invite code, email support@polymarket.us. Polymarket US isn't available in Nevada.
 
-### Stop 2: your web browser
+### In your web browser
+1. Go to [polymarket.us/developer](https://polymarket.us/developer) and sign in with the same login you use on your phone.
+2. Create a key. You get a **Key ID** and a **Secret Key**. Copy the secret now; it's shown once.
 
-1. On your computer, go to [polymarket.us/developer](https://polymarket.us/developer).
-2. Scan the QR code on your screen with your iPhone.
-3. Confirm with Face ID on your phone. You're now signed in on the computer.
-4. Click to create a key. You get a **Key ID** and a **Secret Key**.
-5. Copy the secret right away. It's shown once, and it's gone when you close the dialog.
-
-### Stop 3: your computer's terminal
-
-1. **Download the code.** Click the green **Code** button on this page, then **Download ZIP**, and unzip it. (If you use git: `git clone https://github.com/nmartin15/polymarket-us-starter`.)
-2. **Open a terminal in that folder and install.** On a Mac, if `python` isn't found, type `python3` for the first command.
+### On your computer
+1. Download this repo: green **Code** button, then **Download ZIP**, and unzip it.
+2. Open a terminal in that folder (on a Mac, use `python3` if `python` isn't found):
    ```bash
    python -m venv .venv
    source .venv/bin/activate        # Windows: .venv\Scripts\activate
    pip install -r requirements.txt
+   python check_everything.py       # should end with "All offline checks passed"
    ```
-3. **Check your setup.** `python check_everything.py` should end with "All offline checks passed".
-4. **Add your key.** Copy `.env.example` to a new file named `.env` and paste in your Key ID and Secret Key.
+3. Copy `.env.example` to `.env` and paste in your Key ID and Secret Key.
+4. Run it:
+   ```bash
+   python video1_setup/step1_browse.py                       # series
+   python video1_setup/step1_browse.py --series <ID>         # events in a series
+   python video1_setup/step1_browse.py --event <event-slug>  # markets in an event
+   python video1_setup/step2_market.py <market-slug>         # one market, explained
+   python video1_setup/step3_check_key.py                    # "Key works."
+   ```
 
-Now run the two scripts from the video:
+**Reading a market.** Each market is one instrument with a YES (long) side and a NO (short) side. In a two-team slug, the first team is YES. Read the price step (`orderPriceMinTickSize`, often 0.005) and the smallest order (`minimumTradeQty`, often 0.01 contracts) from the market itself; never guess them from the slug. `step2_market.py` prints both.
+
+## Video 2: Your account, live
 
 ```bash
-python video1_setup/step1_market_data.py               # list active markets (no key needed)
-python video1_setup/step1_market_data.py <market-slug> # rules, quote, spread, order book
-python video1_setup/step2_check_account.py             # read-only: proves your key works
+python video2_account_live/step1_account.py                 # balances, positions, open orders (REST)
+python video2_account_live/step2_market_stream.py <slug>    # live book, trades, heartbeats
+python video2_account_live/step3_private_stream.py          # your orders, fills, positions, balance
 ```
 
-Key rules:
-- `.env` is in `.gitignore`. Keep it there.
-- Never paste your secret into a chat, a screenshot, or a screen recording.
-- If a key leaks, revoke it at polymarket.us/developer and make a new one.
-- The API allows 20 requests per second per key. The scripts here stay far below that.
+- Positions are a map keyed by market, and the net position can be negative: that's a short.
+- Shorts lock $1.00 of margin per contract, which is why buying power can be lower than cash.
+- Don't poll. The WebSockets replace repeated REST calls and keep you under the rate limit.
+- The private socket is how you know an order filled. REST is your check that nothing was missed; `step3_private_stream.py` runs that check when you stop it.
 
-## Video 2: Data plumbing and paper trading
+## Video 3: Orders
 
-**Watch the video first.** Then:
+```bash
+python video3_orders/step1_preview.py <slug> buy-yes 0.45 1                  # preview only
+python video3_orders/step2_place_and_cancel.py <slug> buy-yes 0.05 1         # dry run
+python video3_orders/step2_place_and_cancel.py <slug> buy-yes 0.05 1 --live  # real
+```
 
-1. Try every step on fake data:
-   ```bash
-   python video2_data_paper/make_sample_data.py
-   python video2_data_paper/step2_to_parquet.py sample-market
-   python video2_data_paper/step3_explore.py sample-market
-   python video2_data_paper/step4_replay.py sample-market --fair 0.55
-   ```
-   The sample prices are invented. Never judge a strategy on them.
-2. Record a real market (polling needs no key, `--stream` needs your key and catches every update):
-   ```bash
-   python video2_data_paper/step1_record.py <slug>
-   python video2_data_paper/step1_record.py <slug> --stream
-   ```
-3. Convert, explore, and replay your recording with the same commands, using your slug instead of `sample-market`.
-4. Set `MARKET_SLUG` and `FAIR_VALUE` (your own probability for YES) in `.env`, then run the live paper bot:
-   ```bash
-   python video2_data_paper/step5_paper_bot.py
-   ```
-   Stop it with Ctrl+C, or create a file named `STOP` in this folder. Every paper trade goes to `paper_trades.csv`.
+| Action | Intent | You think in | `price.value` you send |
+|---|---|---|---|
+| `buy-yes` | `ORDER_INTENT_BUY_LONG` | YES price | YES price |
+| `sell-yes` | `ORDER_INTENT_SELL_LONG` | YES price | YES price |
+| `buy-no` | `ORDER_INTENT_BUY_SHORT` | NO price | 1 - NO price |
+| `sell-no` | `ORDER_INTENT_SELL_SHORT` | NO price | 1 - NO price |
 
-Paper fills are pessimistic on purpose: you always cross the spread, you only get the size showing at the top of the book, and every fill pays the taker fee.
+`price.value` is always the YES price. The script converts it for you.
 
-## Video 3: A professional engine
-
-[NautilusTrader](https://nautilustrader.io) is an open-source trading engine with a Rust core and a Python API. It has no Polymarket US connector, so `us_bridge.py` supplies one for data: it turns your recordings into a Nautilus instrument, order book, and trade ticks, and adds the Polymarket US fee model.
-
-**Watch the video first.** Then:
-
-1. Install the engine and check it:
-   ```bash
-   pip install -r video3_nautilus/requirements.txt
-   python check_everything.py --video3
-   ```
-2. Backtest on the sample data, then on your own recording:
-   ```bash
-   python video3_nautilus/step1_backtest.py sample-market --fair 0.55
-   python video3_nautilus/step1_backtest.py <slug>
-   ```
-3. Paper trade live on the engine:
-   ```bash
-   python video3_nautilus/step2_live_paper.py            # taker
-   python video3_nautilus/step2_live_paper.py --maker    # maker
-   ```
-
-Two strategies ship in `strategies.py`. The taker crosses the spread and pays the fee. The maker rests limit orders and pays no fee, but only fills when someone trades with it.
-
-What a backtest cannot tell you:
-- It cannot show how the market would have reacted to your orders.
-- Maker fills are optimistic. The engine does not know how many orders were ahead of yours in the queue.
-- A recording made by polling misses everything between snapshots. Use `--stream` for serious work.
+Guard rails on real orders: nothing is sent without `--live`, you must type `PLACE`, the size is capped by `MAX_LIVE_CONTRACTS` (default 1), the order is maker-only so it rests instead of crossing the spread, and it's cancelled after `HOLD_SECONDS`. Run the private stream in a second terminal to watch it happen.
 
 ## Fees
 
-Polymarket US charges takers `rate x contracts x price x (1 - price)`, rounded to the cent. Makers pay no fee and earn a small rebate. Your rate depends on your taker volume over the last 30 days:
+Takers pay `Θ × contracts × price × (1 − price)`, rounded to the cent. Θ is your account's tier by 30-day taker volume:
 
-| 30-day taker volume | Rate |
+| 30-day taker volume | Θ |
 |---|---|
 | Under $10,000 | 9.5% |
 | $10,000 to $50,000 | 8.5% |
 | $50,000 to $250,000 | 7.5% |
 | $250,000 and up | 6.95% |
 
-New accounts pay 6.95% for their first 7 days. Everything in this repo assumes 9.5%, the rate a new trader settles into. Set `TAKER_FEE_RATE` in `.env` to your tier, and check the [official fee schedule](https://docs.polymarket.us/fees) before you trade, because it changes.
+New accounts pay 6.95% for their first 7 days. Makers pay no fee and earn a small rebate. Market objects also carry a `feeCoefficient`, which `step2_market.py` prints. Check the [official fee schedule](https://docs.polymarket.us/fees) before you trade.
 
-The backtest in video 3 counts maker fills as zero fee and leaves the rebate out, so maker results are slightly understated.
+## Key safety
+
+- `.env` is in `.gitignore`. Keep it there.
+- Never paste your secret into a chat, a screenshot, or a screen recording.
+- If a key leaks, revoke it at polymarket.us/developer and make a new one.
 
 ## Files
 
 | File | What it does |
 |---|---|
-| `pmus/config.py` | Loads `.env` and builds the API client |
-| `pmus/strategy.py` | The fair-value rule and the fee formula |
-| `pmus/paper_broker.py` | Simulated fills, fees, and P&L |
-| `pmus/recording.py` | Reads and writes recorded market data |
-| `video3_nautilus/us_bridge.py` | Polymarket US data to NautilusTrader objects |
-| `video3_nautilus/strategies.py` | Taker and maker strategies for NautilusTrader |
-| `check_everything.py` | Runs the whole series offline |
+| `pmus/config.py` | Loads `.env` and builds the SDK clients |
+| `pmus/money.py` | Prices as USD objects, price and quantity steps, the fee formula |
+| `pmus/markets.py` | Reads a market: YES and NO sides, tick, minimum order, best bid and ask |
+| `pmus/orders.py` | Builds an order: intent, YES-price conversion, checks |
+| `pmus/live.py` | WebSocket heartbeats and reconnects |
+| `check_everything.py` | Runs every script offline against a fake Polymarket |
 
-Free for Realm Labs students. MIT licensed. NautilusTrader is a separate project under LGPL-3.0.
-
-Not financial advice. Prediction markets can lose you money, and paper or backtest results do not guarantee live results.
+Official docs: [docs.polymarket.us](https://docs.polymarket.us). Free for Realm Labs students. MIT licensed. Not financial advice: prediction markets can lose you money.
